@@ -1,0 +1,46 @@
+CREATE TABLE Supplier (
+ SID INT PRIMARY KEY,
+ Sname VARCHAR(50) NOT NULL,
+ branch VARCHAR(10),
+ city VARCHAR(30),
+ phone VARCHAR(15)
+);
+
+CREATE TABLE Part (
+ PID INT PRIMARY KEY,
+ Pname VARCHAR(50) NOT NULL,
+ color VARCHAR(20),
+ price DECIMAL(10,2)
+);
+
+CREATE TABLE Supplies (
+ SID INT NOT NULL,
+ PID INT NOT NULL,
+ qty INT NOT NULL,
+ date_supplied DATE NOT NULL,
+ PRIMARY KEY (SID, PID, date_supplied),
+ FOREIGN KEY (SID) REFERENCES Supplier(SID),
+ FOREIGN KEY (PID) REFERENCES Part(PID)
+ );
+ 
+START TRANSACTION;
+INSERT INTO Supplier VALUES (204001,'Vandana','NORTH','Delhi','9810010010');
+INSERT INTO Supplier VALUES (204002,'Rakesh','WEST','Mumbai','9820020020');
+INSERT INTO Part VALUES (301001,'Bolt','Silver',5);
+INSERT INTO Part VALUES (301002,'Nut','Black',3);
+INSERT INTO Supplies VALUES (204001,301001,100,'2025-01-10');
+SAVEPOINT sp1;
+INSERT INTO Supplies VALUES (204002,301002,200,'2025-01-12');
+UPDATE Supplier SET city='Agra' WHERE SID=204002;
+SAVEPOINT sp2;
+
+-- select * FROM Supplier;
+-- select * FROM Part;
+-- select * FROM Supplies;
+
+ROLLBACK TO SAVEPOINT sp1;
+SELECT * FROM Supplies ORDER BY SID, PID, date_supplied;
+SELECT SID, Sname, city FROM Supplier ORDER BY SID;
+COMMIT;
+SELECT * FROM Supplies ORDER BY SID, PID, date_supplied;
+SELECT SID, Sname, city FROM Supplier ORDER BY SID;
